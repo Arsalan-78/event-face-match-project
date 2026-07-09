@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+.Python
+env/
+venv/
+ENV/
+*.swp
+*.swo
+*~
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+
+# Node.js
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local files
+.env
+.env.local
+.env.*.local
+uploads/
+faiss_store/
+*.db
+*.sqlite3
+.DS_Store
+Thumbs.db

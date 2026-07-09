@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+.Python
+env/
+venv/
+ENV/
+*.swp
+*.swo
+*~
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local files
+.env
+.env.local
+.env.*.local
+uploads/
+faiss_store/
+*.db
+*.sqlite3
+.DS_Store
+Thumbs.db
