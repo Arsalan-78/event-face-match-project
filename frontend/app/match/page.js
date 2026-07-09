@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState } from "react";
@@ -185,8 +186,10 @@ export default function MatchPage() {
           {!loading && photos.length > 0 && (
             <div className="results-grid" style={{ marginTop: 12 }}>
               {photos.map((p) => {
-                const thumbSrc = `http://localhost:8000${p.thumbnail_url || p.url}`;
-                const fullSrc = `http://localhost:8000${p.url}`;
+                const thumbPath = (p.thumbnail_url || p.url).startsWith("/") ? (p.thumbnail_url || p.url).slice(1) : (p.thumbnail_url || p.url);
+                const fullPath = p.url.startsWith("/") ? p.url.slice(1) : p.url;
+                const thumbSrc = `/api/photos/${thumbPath}`;
+                const fullSrc = `/api/photos/${fullPath}`;
                 return (
                   <article className="result-card" key={p.filename}>
                     <img
