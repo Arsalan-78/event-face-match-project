@@ -134,16 +134,18 @@ def save_event_photo(event_id: str, file_bytes: bytes, original_filename: str) -
             public_id=photo_key,
             resource_type="image",
         )
-        # Upload thumbnail to Cloudinary
-        thumbnail_upload = cloudinary.uploader.upload(
-            thumb_bytes,
-            public_id=thumb_key,
-            resource_type="image",
+        # Use Cloudinary transformation to generate thumbnail on the fly
+        thumbnail_url = cloudinary.CloudinaryImage(photo_key).build_url(
+            width=THUMBNAIL_SIZE,
+            height=THUMBNAIL_SIZE,
+            crop="limit",
+            format="jpg",
+            quality=85,
         )
         return {
             "filename": filename,
             "storage_key": original_upload["secure_url"],
-            "thumbnail_key": thumbnail_upload["secure_url"],
+            "thumbnail_key": thumbnail_url,
             "width": width,
             "height": height,
         }
