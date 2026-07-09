@@ -6,6 +6,7 @@ Storage abstraction for event photos and thumbnails.
 - Local backend: writes to disk for development.
 - R2 backend: stores private objects in Cloudflare R2 and generates
   signed URLs at read time.
+- Cloudinary backend: stores images in Cloudinary and uses Cloudinary URLs.
 """
 
 from io import BytesIO
@@ -13,6 +14,8 @@ import os
 import uuid
 
 import boto3
+import cloudinary
+import cloudinary.uploader
 from PIL import Image, ImageOps
 
 from app.config import (
@@ -23,6 +26,9 @@ from app.config import (
     SIGNED_URL_TTL_SECONDS,
     STORAGE_BACKEND,
     THUMBNAIL_SIZE,
+    CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET,
 )
 from app.validators import (
     assert_path_within_base,
@@ -35,6 +41,14 @@ EVENTS_DIR = os.path.join(BASE_DIR, "events")
 THUMBS_SUBDIR = "thumbs"
 
 os.makedirs(EVENTS_DIR, exist_ok=True)
+
+# Configure Cloudinary if credentials are provided
+if STORAGE_BACKEND == "cloudinary":
+    cloudinary.config(
+        cloud_name=CLOUDINARY_CLOUD_NAME,
+        api_key=CLOUDINARY_API_KEY,
+        api_secret=CLOUDINARY_API_SECRET,
+    )
 
 
 def _safe_extension(original_filename: str | None) -> str:
@@ -106,7 +120,35 @@ def save_event_photo(event_id: str, file_bytes: bytes, original_filename: str) -
             ContentType=_content_type_from_extension(filename),
         )
         r2.put_object(Bucket=R2_BUCKET, Key=thumb_key, Body=thumb_bytes, ContentType="image/jpeg")
+        return {
+            "filename": filename,
+            "storage_key": photo_key,
+            "thumbnail_key": thumb_key,
+            "width": width,
+            "height": height,
+        }
+    elif STORAGE_BACKEND == "cloudinary":
+        # Upload original image to Cloudinary
+        original_upload = cloudinary.uploader.upload(
+            file_bytes,
+            public_id=photo_key,
+            resource_type="image",
+        )
+        # Upload thumbnail to Cloudinary
+        thumbnail_upload = cloudinary.uploader.upload(
+            thumb_bytes,
+            public_id=thumb_key,
+            resource_type="image",
+        )
+        return {
+            "filename": filename,
+            "storage_key": original_upload["secure_url"],
+            "thumbnail_key": thumbnail_upload["secure_url"],
+            "width": width,
+            "height": height,
+        }
     else:
+        # Local storage
         event_folder = os.path.join(EVENTS_DIR, event_id)
         thumb_folder = os.path.join(event_folder, THUMBS_SUBDIR)
         os.makedirs(event_folder, exist_ok=True)
@@ -124,13 +166,13 @@ def save_event_photo(event_id: str, file_bytes: bytes, original_filename: str) -
         with open(thumb_path, "wb") as f:
             f.write(thumb_bytes)
 
-    return {
-        "filename": filename,
-        "storage_key": photo_key,
-        "thumbnail_key": thumb_key,
-        "width": width,
-        "height": height,
-    }
+        return {
+            "filename": filename,
+            "storage_key": photo_key,
+            "thumbnail_key": thumb_key,
+            "width": width,
+            "height": height,
+        }
 
 
 def event_photo_path(event_id: str, filename: str, *, thumbnail: bool = False) -> str:

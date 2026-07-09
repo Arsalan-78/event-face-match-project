@@ -30,7 +30,7 @@ MATCH_RATE_LIMIT: str = os.getenv("MATCH_RATE_LIMIT", "10/minute")
 DEFAULT_SQLITE_PATH = os.path.join(os.path.dirname(__file__), "..", "app.db")
 DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{DEFAULT_SQLITE_PATH}")
 
-# Storage: "local" (dev) or "r2" (Cloudflare R2 / S3-compatible).
+# Storage: "local" (dev) or "r2" (Cloudflare R2 / S3-compatible) or "cloudinary"
 STORAGE_BACKEND: str = os.getenv("STORAGE_BACKEND", "local").lower()
 
 # Signed URL settings (used by R2 backend).
@@ -44,3 +44,8 @@ R2_ENDPOINT_URL: str = os.getenv("R2_ENDPOINT_URL", "")
 R2_ACCESS_KEY_ID: str = os.getenv("R2_ACCESS_KEY_ID", "")
 R2_SECRET_ACCESS_KEY: str = os.getenv("R2_SECRET_ACCESS_KEY", "")
 R2_BUCKET: str = os.getenv("R2_BUCKET", "")
+
+# Cloudinary settings.
+CLOUDINARY_CLOUD_NAME: str = os.getenv("CLOUDINARY_CLOUD_NAME", "")
+CLOUDINARY_API_KEY: str = os.getenv("CLOUDINARY_API_KEY", "")
+CLOUDINARY_API_SECRET: str = os.getenv("CLOUDINARY_API_SECRET", "")

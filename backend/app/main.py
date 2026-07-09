@@ -256,6 +256,8 @@ def get_photo(event_id: str, filename: str):
 
     if STORAGE_BACKEND == "r2":
         return RedirectResponse(get_signed_download_url(photo.storage_key))
+    elif STORAGE_BACKEND == "cloudinary":
+        return RedirectResponse(photo.storage_key)
 
     path = event_photo_path(event_id, filename)
     if not os.path.exists(path):
@@ -280,6 +282,8 @@ def get_thumbnail(event_id: str, filename: str):
 
     if STORAGE_BACKEND == "r2":
         return RedirectResponse(get_signed_download_url(photo.thumbnail_key))
+    elif STORAGE_BACKEND == "cloudinary":
+        return RedirectResponse(photo.thumbnail_key)
 
     path = event_photo_path(event_id, filename, thumbnail=True)
     if not os.path.exists(path):
