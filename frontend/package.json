@@ -8,8 +8,15 @@
     "start": "next start"
   },
   "dependencies": {
+    "framer-motion": "^12.42.2",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.2",
+    "autoprefixer": "^10.5.2",
+    "postcss": "^8.5.16",
+    "tailwindcss": "^4.3.2"
   }
 }
