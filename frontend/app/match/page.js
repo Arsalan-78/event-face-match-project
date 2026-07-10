@@ -186,10 +186,9 @@ export default function MatchPage() {
           {!loading && photos.length > 0 && (
             <div className="results-grid" style={{ marginTop: 12 }}>
               {photos.map((p) => {
-                const thumbPath = (p.thumbnail_url || p.url).startsWith("/") ? (p.thumbnail_url || p.url).slice(1) : (p.thumbnail_url || p.url);
-                const fullPath = p.url.startsWith("/") ? p.url.slice(1) : p.url;
-                const thumbSrc = `/api/photos/${thumbPath}`;
-                const fullSrc = `/api/photos/${fullPath}`;
+                const isCloudinaryUrl = (p.thumbnail_url || p.url).startsWith("http");
+                const thumbSrc = isCloudinaryUrl ? (p.thumbnail_url || p.url) : `/api/photos/${(p.thumbnail_url || p.url).startsWith("/") ? (p.thumbnail_url || p.url).slice(1) : (p.thumbnail_url || p.url)}`;
+                const fullSrc = isCloudinaryUrl ? p.url : `/api/photos/${p.url.startsWith("/") ? p.url.slice(1) : p.url}`;
                 return (
                   <article className="result-card" key={p.filename}>
                     <img
